@@ -236,12 +236,12 @@ def add_article(request):
 
         from bs4 import BeautifulSoup
 
-        bs = BeautifulSoup(article_content, 'html.parser')
-        desc = bs.text[0:150]+"..."  # 得到纯文本的前150个字符作为文章描述
+        bs = BeautifulSoup(article_content, 'html.parser')  # 实例化对象，将标签字符串文本内容传入
         # 过滤非法字符串，防止xss攻击
-        for tag in bs.find_all():
-            if tag.name in ["script", "link"]:  # 如果标签名字在
-                tag.decompose()  # 删除
+        for tag in bs.find_all():  # 查询所有的标签对象， .find_all("a", 属性名=" ") 查询所有有此属性的a 标签对象
+            if tag.name in ["script", "link"]:  # 如果标签的名字为 script 或者 link
+                tag.decompose()  # 删除此标签
+        desc = bs.text[0:150] + "..."  # 得到纯文本的前150个字符作为文章描述  .text  得到文本内容
 
         article_obj = models.Article.objects.create(user=user,title=title,desc=desc)  # 创建文章对象，保存
         models.ArticleDetail.objects.create(content=str(bs),article=article_obj)  # 文章详情  str(bs)处理后的bs
